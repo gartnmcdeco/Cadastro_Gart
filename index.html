@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Cliente — Pessoa Jurídica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand-orange:#FF671F;
+    --brand-orange-dark:#e0551a;
+    --brand-petrol:#005A69;
+    --brand-petrol-dark:#00434e;
+    --ink:#231F20;
+    --paper:#f7f7f6;
+    --card:#ffffff;
+    --line:#e3e1df;
+    --slate:#6b6668;
+    --gold: var(--brand-orange);
+    --gold-dark: var(--brand-orange-dark);
+    --navy: var(--brand-petrol);
+    --navy-dark: var(--brand-petrol-dark);
+    --muted: var(--slate);
+    --ok: #2f7d5c;
+    --ok-bg: #e2f0e8;
+    --danger: #c1432a;
+    --radius: 8px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Raleway', -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight:400; font-size:14px; line-height:1.45;
+  }
+  header.top{
+    background: linear-gradient(160deg, var(--brand-petrol) 0%, var(--brand-petrol-dark) 100%);
+    color:#fff; padding:26px 24px 20px;
+  }
+  header.top h1{
+    margin:0; font-size:1.4rem; letter-spacing:.04em; font-weight:800; text-transform:uppercase;
+  }
+  header.top h1 span{ color:var(--brand-orange); }
+  header.top p{ margin:8px 0 0; color:#cfeaef; font-size:.85rem; }
+
+  .stepper{
+    display:flex; flex-wrap:wrap; gap:6px; margin-top:16px;
+  }
+  .stepper span{
+    font-size:.68rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:#cfeaef; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.22); padding:4px 10px; border-radius:999px;
+  }
+
+  main{ max-width:920px; margin:0 auto; padding:24px 16px 80px; }
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:22px; margin-bottom:20px;
+  }
+  .card h2{
+    font-size:.92rem; margin:0 0 4px; color:var(--brand-petrol);
+    text-transform:uppercase; letter-spacing:.05em; font-weight:700;
+    border-bottom:2px solid var(--brand-orange); padding-bottom:8px;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .card h2 .num{
+    color:var(--brand-orange-dark); font-weight:800; font-size:.9rem;
+  }
+  .card .hint{ margin:10px 0 16px; color:var(--slate); font-size:.82rem; }
+
+  .grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:12px 14px; }
+  .f{ grid-column: span 12; display:flex; flex-direction:column; gap:5px; }
+  @media(min-width:640px){
+    .f2{ grid-column: span 6; }
+    .f3{ grid-column: span 4; }
+    .f4{ grid-column: span 3; }
+    .f6{ grid-column: span 6; }
+    .f8{ grid-column: span 8; }
+  }
+  label{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--slate); font-weight:700;
+  }
+  label .opt{ font-weight:400; text-transform:none; letter-spacing:0; color:var(--slate); }
+  input, select, textarea{
+    border:1px solid var(--line); border-radius:var(--radius); padding:9px 10px;
+    font-size:13.5px; background:#fff; color:var(--ink); font-family:inherit;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:2px solid var(--brand-orange); outline-offset:1px; border-color:var(--brand-orange);
+  }
+  input[readonly]{ background:#f2f6f6; color:var(--slate); }
+
+  .badge-auto{
+    display:none; align-items:center; gap:4px; font-size:10.5px; font-weight:700;
+    text-transform:none; letter-spacing:0;
+    color:var(--ok); background:var(--ok-bg); border-radius:999px; padding:2px 8px;
+    width:fit-content; margin-top:2px;
+  }
+  .filled .badge-auto{ display:inline-flex; }
+
+  .cnpj-row{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+  .cnpj-row .f{ flex:1; min-width:220px; }
+  button{
+    font-family:inherit; cursor:pointer; border:none; border-radius:var(--radius);
+    font-weight:700; font-size:13.5px; padding:10px 18px; transition:filter .12s ease, transform .06s ease;
+  }
+  button:active{ transform:translateY(1px); }
+  .btn-gold{ background:var(--brand-orange); color:#fff; }
+  .btn-gold:hover{ filter:brightness(1.08); }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--slate); }
+  .btn-ghost:hover{ background:#fff; }
+  #cnpjStatus{ font-size:.82rem; margin-top:8px; min-height:1.1em; }
+  #cnpjStatus.ok{ color:var(--ok); }
+  #cnpjStatus.err{ color:var(--danger); }
+  #cnpjStatus.busy{ color:var(--slate); }
+
+  .refRow, .fileRow{
+    display:grid; grid-template-columns:1fr; gap:10px; padding:12px; border:1px dashed var(--line);
+    border-radius:8px; margin-bottom:10px; position:relative;
+  }
+  @media(min-width:640px){ .refRow{ grid-template-columns:2fr 1fr 1fr auto; align-items:end; } }
+  .remove{ background:none; color:var(--danger); font-size:.78rem; padding:4px 8px; }
+
+  .file-item{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:8px;
+  }
+  .file-item .name{ font-size:.85rem; font-weight:700; color:var(--ink); }
+  .file-item .desc a{
+    color:var(--brand-petrol); font-weight:600; text-decoration:none; font-size:.76rem;
+  }
+  .file-item .desc a:hover{ text-decoration:underline; color:var(--brand-orange-dark); }
+  .file-item input[type=file]{ font-size:.78rem; max-width:220px; }
+
+  .radio-group{ display:flex; gap:14px; flex-wrap:wrap; padding-top:2px; }
+  .radio-group label{ font-weight:400; text-transform:none; letter-spacing:0; display:flex; gap:5px; align-items:center; color:var(--ink); font-size:.85rem; }
+
+  footer.submit{
+    position:sticky; bottom:0; background:var(--card); border-top:1px solid var(--line);
+    padding:14px 22px; display:flex; justify-content:flex-end; gap:10px; border-radius:10px 10px 0 0;
+    box-shadow:0 -4px 14px rgba(0,0,0,.05);
+  }
+  #finalStatus{ font-size:.85rem; align-self:center; margin-right:auto; }
+  #finalStatus.ok{ color:var(--ok); font-weight:600; }
+  #finalStatus.err{ color:var(--danger); font-weight:600; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>GART<span>.</span> Cadastro de Cliente — Pessoa Jurídica</h1>
+  <p>Informe o CNPJ para busca automática de dados. Campos marcados como manuais dependem da conferência do operador.</p>
+  <div class="stepper">
+    <span>01 Informações gerais</span><span>02 Referências comerciais</span>
+    <span>03 Informações fiscais</span><span>05 Informações de venda</span>
+    <span>06 Transportadora</span><span>07 Documentação</span><span>08 Informações gerais</span>
+  </div>
+</header>
+
+<main>
+<form id="cadastroForm">
+
+  <!-- 01. INFORMAÇÕES GERAIS -->
+  <section class="card">
+    <h2><span class="num">01.</span> Informações gerais</h2>
+    <p class="hint">Digite o CNPJ e clique em buscar — Razão Social, endereço, porte e capital social são preenchidos automaticamente via BrasilAPI (base pública da Receita Federal).</p>
+
+    <div class="cnpj-row">
+      <div class="f">
+        <label>CNPJ</label>
+        <input id="cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+      </div>
+      <button type="button" class="btn-gold" id="btnBuscar">Buscar dados do CNPJ</button>
+    </div>
+    <div id="cnpjStatus"></div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="f f8" id="wrap_razaoSocial"><label>Razão Social</label><input id="razaoSocial"><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f4" id="wrap_porte"><label>Porte da empresa</label><input id="porte" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+
+      <div class="f f8" id="wrap_nomeComercial"><label>Nome comercial (fantasia)</label><input id="nomeComercial"><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f4" id="wrap_capitalSocial"><label>Capital social</label><input id="capitalSocial" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+
+      <div class="f f4"><label>Insc. Estadual</label><input id="ie"></div>
+      <div class="f f4"><label>Insc. Municipal</label><input id="im"></div>
+      <div class="f f4" id="wrap_simples"><label>Optante pelo Simples Nacional</label>
+        <select id="simples"><option value="">—</option><option>Sim</option><option>Não</option></select>
+      </div>
+
+      <div class="f f8" id="wrap_endereco"><label>Endereço</label><input id="endereco"><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f2"><label>Nº</label><input id="numero"></div>
+      <div class="f f2"><label>Complemento <span class="opt">(opcional)</span></label><input id="complemento"></div>
+
+      <div class="f f3" id="wrap_cep"><label>CEP</label><input id="cep" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f3" id="wrap_bairro"><label>Bairro</label><input id="bairro" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f4" id="wrap_cidade"><label>Cidade</label><input id="cidade" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+      <div class="f f2" id="wrap_uf"><label>UF</label><input id="uf" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
+
+      <div class="f f4"><label>Contato Comercial <span class="opt">(nome)</span></label><input id="ccNome"></div>
+      <div class="f f4"><label>Telefone</label><input id="ccTel"></div>
+      <div class="f f4"><label>E-mail Comercial</label><input id="ccEmail" type="email"></div>
+
+      <div class="f f4"><label>Contato Financeiro <span class="opt">(nome)</span></label><input id="cfNome"></div>
+      <div class="f f4"><label>Telefone</label><input id="cfTel"></div>
+      <div class="f f4"><label>E-mail de Cobrança (nota fiscal)</label><input id="cfEmail" type="email"></div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <label style="margin-bottom:8px; display:block;">Representantes legais <span class="badge-auto" id="repAutoBadge" style="display:none; margin-left:6px;">✓ sócios preenchidos automaticamente</span></label>
+      <div id="repList"></div>
+      <button type="button" class="btn-ghost" id="btnAddRep">+ Adicionar representante</button>
+    </div>
+  </section>
+
+  <!-- 02. REFERÊNCIAS COMERCIAIS -->
+  <section class="card">
+    <h2><span class="num">02.</span> Referências comerciais</h2>
+    <div id="refList"></div>
+    <button type="button" class="btn-ghost" id="btnAddRef">+ Adicionar referência</button>
+  </section>
+
+  <!-- 03. INFORMAÇÕES FISCAIS -->
+  <section class="card">
+    <h2><span class="num">03.</span> Informações fiscais</h2>
+    <div class="grid">
+      <div class="f f4"><label>Retenção de ISS</label><select id="issRet"><option value="">—</option><option>Sim</option><option>Não</option></select></div>
+      <div class="f f4"><label>INSS</label><input id="inss"></div>
+      <div class="f f4"><label>IRRF</label><input id="irrf"></div>
+      <div class="f f4"><label>ICMS</label><input id="icmsGeral"></div>
+      <div class="f f4"><label>Para Consumo</label><select id="paraConsumo"><option value="">—</option><option>Sim</option><option>Não</option><option>N/A</option></select></div>
+      <div class="f f6"><label>Se sim, envie declaração <span class="opt">(anexar na seção 07)</span></label><input id="declaracaoConsumo" placeholder="observação, se houver"></div>
+
+      <div class="f f4"><label>Benefício Fiscal</label><input id="beneficioFiscal"></div>
+      <div class="f f4"><label>Isenção de ST</label><select id="isencaoST"><option value="">—</option><option>Sim</option><option>Não</option></select></div>
+      <div class="f f4"><label>Suframa?</label><select id="suframa"><option value="">—</option><option>Sim</option><option>Não</option></select></div>
+
+      <div class="f f3"><label>ICMS (%)</label><input id="icms2"></div>
+      <div class="f f3"><label>PIS (%)</label><input id="pis"></div>
+      <div class="f f3"><label>COFINS (%)</label><input id="cofins"></div>
+      <div class="f f3"><label>IPI (%)</label><input id="ipi"></div>
+    </div>
+  </section>
+
+  <!-- 05. INFORMAÇÕES DE VENDA -->
+  <section class="card">
+    <h2><span class="num">05.</span> Informações de venda</h2>
+    <div class="grid">
+      <div class="f f3"><label>Condição de Pagamento</label><input id="condPagto"></div>
+      <div class="f f3"><label>Representante Comercial</label><input id="repComercial"></div>
+      <div class="f f3">
+        <label>Tipo de Cliente</label>
+        <select id="tipoCliente">
+          <option value="">—</option>
+          <option>Home Center</option><option>Revenda</option><option>Distribuidor</option>
+          <option>Private Label</option><option>Construtora</option><option>Consumidor Final</option>
+          <option>Estrangeiro</option>
+        </select>
+      </div>
+      <div class="f f3"><label>Valor do 1º Pedido</label><input id="valor1Pedido" placeholder="R$"></div>
+    </div>
+  </section>
+
+  <!-- 06. DADOS DA TRANSPORTADORA -->
+  <section class="card">
+    <h2><span class="num">06.</span> Dados da Transportadora</h2>
+    <div class="grid">
+      <div class="f f6"><label>Razão Social</label><input id="transpRazao"></div>
+      <div class="f f3"><label>Telefone</label><input id="transpTel"></div>
+      <div class="f f3"><label>E-mail</label><input id="transpEmail" type="email"></div>
+      <div class="f f6"><label>CNPJ</label><input id="transpCnpj"></div>
+      <div class="f f6"><label>Tipo de Frete</label>
+        <select id="tipoFrete"><option value="">—</option><option>FOB</option><option>CIF</option></select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07. DOCUMENTAÇÃO A ANEXAR -->
+  <section class="card">
+    <h2><span class="num">07.</span> Documentação a anexar</h2>
+    <p class="hint">Estes documentos precisam ser baixados manualmente pelo operador (os sites oficiais exigem confirmação humana) e depois anexados aqui.</p>
+    <div class="file-item">
+      <div><div class="name">Cartão CNPJ</div><div class="desc"><a href="https://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/" target="_blank" rel="noopener">solucoes.receita.fazenda.gov.br/Servicos/cnpjreva ↗</a></div></div>
+      <input type="file" id="doc_cnpj" accept="application/pdf">
+    </div>
+    <div class="file-item">
+      <div><div class="name">Inscrição Estadual (Sintegra)</div><div class="desc"><a href="http://www.sintegra.gov.br/" target="_blank" rel="noopener">www.sintegra.gov.br ↗</a></div></div>
+      <input type="file" id="doc_sintegra" accept="application/pdf">
+    </div>
+    <div class="file-item">
+      <div><div class="name">Inscrição Prefeitura</div><div class="desc">portal da prefeitura do município <span class="opt">(varia por cidade)</span></div></div>
+      <input type="file" id="doc_prefeitura" accept="application/pdf">
+    </div>
+    <div class="file-item">
+      <div><div class="name">Optante Simples Nacional</div><div class="desc"><a href="https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21" target="_blank" rel="noopener">receita.fazenda.gov.br/simplesnacional ↗</a></div></div>
+      <input type="file" id="doc_simples" accept="application/pdf">
+    </div>
+    <div class="file-item">
+      <div><div class="name">Declaração de consumo <span class="opt">(se aplicável)</span></div><div class="desc">recebida por e-mail do cliente</div></div>
+      <input type="file" id="doc_declaracao" accept="application/pdf,image/*">
+    </div>
+    <div class="file-item">
+      <div><div class="name">Ficha Legal ST <span class="opt">(se benefício fiscal)</span></div><div class="desc">documento interno</div></div>
+      <input type="file" id="doc_ficha" accept="application/pdf,image/*">
+    </div>
+  </section>
+
+  <!-- 08. INFORMAÇÕES GERAIS -->
+  <section class="card">
+    <h2><span class="num">08.</span> Informações gerais</h2>
+    <div class="grid">
+      <div class="f f6">
+        <label>A empresa pertence a um grupo econômico?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="grupoEconomico" value="Sim"> Sim</label>
+          <label><input type="radio" name="grupoEconomico" value="Não"> Não</label>
+        </div>
+      </div>
+      <div class="f f6">
+        <label>A empresa possui participações em outras empresas?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="participacoes" value="Sim"> Sim</label>
+          <label><input type="radio" name="participacoes" value="Não"> Não</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENVIO -->
+  <section class="card">
+    <h2>Envio do cadastro</h2>
+    <p class="hint">O PDF final e os documentos anexados serão enviados para os e-mails abaixo.</p>
+    <div class="grid">
+      <div class="f f6"><label>E-mail comercial (fixo)</label><input id="emailComercial" value="comercial@gart.com.br" readonly></div>
+      <div class="f f6"><label>Seu e-mail (operador)</label><input id="emailOperador" type="email" placeholder="seunome@gart.com.br"></div>
+      <div class="f" style="grid-column: span 12;">
+        <label style="display:flex; align-items:center; gap:7px; text-transform:none; font-weight:600; color:var(--ink); cursor:pointer;">
+          <input type="checkbox" id="modoTeste" style="width:auto;">
+          Modo de teste — enviar somente para o meu e-mail (não envia para comercial@gart.com.br)
+        </label>
+      </div>
+    </div>
+  </section>
+
+</form>
+</main>
+
+<footer class="submit">
+  <span id="finalStatus"></span>
+  <button type="button" class="btn-ghost" id="btnLimpar">Limpar formulário</button>
+  <button type="button" class="btn-ghost" id="btnPreview">Pré-visualizar PDF</button>
+  <button type="button" class="btn-ghost" id="btnPacoteTeste">Baixar pacote de teste (.zip)</button>
+  <button type="button" class="btn-gold" id="btnSalvarEnviar">Salvar e enviar</button>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* ============ CONFIG ============ */
+// Cole aqui a URL da sua Cloud Function do Google Cloud (ex: https://enviarcadastro-xxxxx-rj.a.run.app)
+const CLOUD_FUNCTION_URL = "https://enviarcadastro-15626673237.southamerica-east1.run.app";
+
+/* ============ BUSCA CNPJ (BrasilAPI) ============ */
+const cnpjInput = document.getElementById('cnpj');
+cnpjInput.addEventListener('input', () => {
+  let v = cnpjInput.value.replace(/\D/g,'').slice(0,14);
+  v = v.replace(/^(\d{2})(\d)/,'$1.$2')
+       .replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+       .replace(/\.(\d{3})(\d)/,'.$1/$2')
+       .replace(/(\d{4})(\d)/,'$1-$2');
+  cnpjInput.value = v;
+});
+
+function markAuto(id){ document.getElementById('wrap_'+id).classList.add('filled'); }
+
+async function buscarDadosCNPJ(raw){
+  // 1ª tentativa: BrasilAPI (base pública, dados via Receita Federal)
+  try{
+    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${raw}`);
+    if (r.ok) return await r.json();
+  }catch(e){ /* segue para a segunda fonte */ }
+
+  // 2ª tentativa: ReceitaWS (fonte alternativa, também pública e sem captcha)
+  try{
+    const r2 = await fetch(`https://www.receitaws.com.br/v1/cnpj/${raw}`);
+    if (r2.ok){
+      const d2 = await r2.json();
+      if (d2.status !== 'ERROR'){
+        return {
+          razao_social: d2.nome, nome_fantasia: d2.fantasia,
+          porte: d2.porte, capital_social: d2.capital_social,
+          descricao_tipo_de_logradouro: '', logradouro: d2.logradouro,
+          numero: d2.numero, complemento: d2.complemento,
+          cep: (d2.cep || '').replace(/\D/g,''), bairro: d2.bairro,
+          municipio: d2.municipio, uf: d2.uf,
+          opcao_pelo_simples: d2.simples ? d2.simples.optante : undefined,
+          qsa: (d2.qsa || []).map(s => ({ nome_socio: s.nome, qualificacao_socio: s.qual, data_entrada_sociedade: '' }))
+        };
+      }
+    }
+  }catch(e){ /* nenhuma das duas fontes respondeu */ }
+
+  throw new Error('nenhuma das duas bases públicas respondeu');
+}
+
+document.getElementById('btnBuscar').addEventListener('click', async () => {
+  const status = document.getElementById('cnpjStatus');
+  const raw = cnpjInput.value.replace(/\D/g,'');
+  if (raw.length !== 14){
+    status.textContent = 'Digite um CNPJ válido (14 dígitos).';
+    status.className = 'err';
+    return;
+  }
+  status.textContent = 'Buscando dados (BrasilAPI, com ReceitaWS como alternativa)...';
+  status.className = 'busy';
+  try{
+    const d = await buscarDadosCNPJ(raw);
+
+    document.getElementById('razaoSocial').value = d.razao_social || '';
+    document.getElementById('nomeComercial').value = d.nome_fantasia || '';
+    document.getElementById('porte').value = d.porte || '';
+    document.getElementById('capitalSocial').value = d.capital_social != null ? `R$ ${Number(d.capital_social).toLocaleString('pt-BR')}` : '';
+    document.getElementById('endereco').value = [d.descricao_tipo_de_logradouro, d.logradouro].filter(Boolean).join(' ');
+    document.getElementById('numero').value = d.numero || '';
+    document.getElementById('complemento').value = d.complemento || '';
+    document.getElementById('cep').value = d.cep || '';
+    document.getElementById('bairro').value = d.bairro || '';
+    document.getElementById('cidade').value = d.municipio || '';
+    document.getElementById('uf').value = d.uf || '';
+
+    // Situação no Simples Nacional (quando disponível na base)
+    if (d.opcao_pelo_simples === true) document.getElementById('simples').value = 'Sim';
+    else if (d.opcao_pelo_simples === false) document.getElementById('simples').value = 'Não';
+
+    ['razaoSocial','nomeComercial','porte','capitalSocial','endereco','cep','bairro','cidade','uf','simples']
+      .forEach(markAuto);
+
+    // Quadro de Sócios e Administradores (QSA) → preenche direto os Representantes legais
+    const repBadge = document.getElementById('repAutoBadge');
+    if (Array.isArray(d.qsa) && d.qsa.length > 0){
+      repList.innerHTML = '';
+      d.qsa.forEach(s => addRep(s.nome_socio || '', '', s.qualificacao_socio || '', true));
+      repBadge.style.display = 'inline-flex';
+    } else {
+      repBadge.style.display = 'none';
+    }
+
+    status.textContent = '✓ Dados encontrados e preenchidos. Confira antes de enviar — Insc. Estadual, Insc. Municipal e dados de contato continuam manuais.';
+    status.className = 'ok';
+  }catch(err){
+    status.textContent = 'Não foi possível buscar automaticamente em nenhuma das duas bases (BrasilAPI / ReceitaWS). Se você abriu este arquivo localmente, teste na versão publicada no GitHub Pages — algumas chamadas externas são bloqueadas em arquivos abertos direto do computador. Se persistir, preencha manualmente.';
+    status.className = 'err';
+  }
+});
+
+/* ============ REPRESENTANTES LEGAIS (dinâmico, com preenchimento automático via QSA) ============ */
+const repList = document.getElementById('repList');
+function addRep(nome = '', tel = '', cargo = '', auto = false){
+  const row = document.createElement('div');
+  row.className = 'refRow';
+  row.innerHTML = `
+    <div class="f"><label>Representante / Sócio</label><input class="repNome" value="${nome.replace(/"/g,'&quot;')}"></div>
+    <div class="f"><label>Telefone</label><input class="repTel" value="${tel.replace(/"/g,'&quot;')}"></div>
+    <div class="f"><label>Cargo</label><input class="repCargo" value="${cargo.replace(/"/g,'&quot;')}"></div>
+    <button type="button" class="remove" onclick="this.closest('.refRow').remove()">Remover</button>
+  `;
+  if (auto) row.querySelectorAll('input').forEach(i => i.style.background = '#e2f0e8');
+  repList.appendChild(row);
+}
+document.getElementById('btnAddRep').addEventListener('click', () => addRep());
+addRep(); // primeira linha em branco, visível desde o início
+
+/* ============ REFERÊNCIAS COMERCIAIS (dinâmico) ============ */
+const refList = document.getElementById('refList');
+let refCount = 0;
+function addRef(){
+  refCount++;
+  const row = document.createElement('div');
+  row.className = 'refRow';
+  row.innerHTML = `
+    <div class="f"><label>Empresa</label><input class="refEmpresa"></div>
+    <div class="f"><label>Segmento</label>
+      <select class="refSegmento"><option value="">—</option>
+        <option>Serviços</option><option>Indústria</option><option>Comércio</option><option>Agroindústria</option>
+      </select>
+    </div>
+    <div class="f"><label>Tipo</label>
+      <select class="refTipo"><option value="">—</option>
+        <option>Fornecedor</option><option>Cliente</option><option>Fornecedor/Cliente</option>
+      </select>
+    </div>
+    <button type="button" class="remove" onclick="this.closest('.refRow').remove()">Remover</button>
+  `;
+  refList.appendChild(row);
+}
+document.getElementById('btnAddRef').addEventListener('click', addRef);
+addRef(); // primeira linha já visível
+
+/* ============ LIMPAR FORMULÁRIO ============ */
+function limparFormulario({ manterOperador = true, silencioso = false } = {}){
+  const operadorAtual = document.getElementById('emailOperador').value;
+
+  document.getElementById('cadastroForm').reset();
+  if (manterOperador) document.getElementById('emailOperador').value = operadorAtual;
+
+  // remove os selos "preenchido automaticamente"
+  document.querySelectorAll('.filled').forEach(el => el.classList.remove('filled'));
+
+  // volta as referências comerciais para uma única linha vazia
+  refList.innerHTML = '';
+  addRef();
+
+  // volta os representantes legais para uma única linha vazia
+  repList.innerHTML = '';
+  addRep();
+  document.getElementById('repAutoBadge').style.display = 'none';
+
+  // limpa mensagens de status
+  document.getElementById('cnpjStatus').textContent = '';
+  document.getElementById('cnpjStatus').className = '';
+  if (!silencioso){
+    const finalStatus = document.getElementById('finalStatus');
+    finalStatus.textContent = 'Formulário limpo — pronto para um novo cadastro.';
+    finalStatus.className = '';
+  }
+}
+
+document.getElementById('btnLimpar').addEventListener('click', () => {
+  if (confirm('Limpar todos os campos preenchidos neste formulário? Esta ação não pode ser desfeita.')){
+    limparFormulario();
+  }
+});
+
+/* ============ COLETA DE DADOS DO FORM ============ */
+function collectData(){
+  const val = id => document.getElementById(id).value || '';
+  const radio = name => (document.querySelector(`input[name="${name}"]:checked`) || {}).value || '';
+
+  const refs = [...document.querySelectorAll('#refList .refRow')].map(r => ({
+    empresa: r.querySelector('.refEmpresa').value,
+    segmento: r.querySelector('.refSegmento').value,
+    tipo: r.querySelector('.refTipo').value
+  })).filter(r => r.empresa || r.segmento || r.tipo);
+
+  return {
+    geral: {
+      razaoSocial: val('razaoSocial'), nomeComercial: val('nomeComercial'),
+      cnpj: val('cnpj'), ie: val('ie'), im: val('im'),
+      endereco: val('endereco'), numero: val('numero'), complemento: val('complemento'),
+      cep: val('cep'), bairro: val('bairro'), cidade: val('cidade'), uf: val('uf'),
+      ccNome: val('ccNome'), ccTel: val('ccTel'), ccEmail: val('ccEmail'),
+      cfNome: val('cfNome'), cfTel: val('cfTel'), cfEmail: val('cfEmail'),
+      porte: val('porte'), capitalSocial: val('capitalSocial'), simples: val('simples')
+    },
+    representantes: [...document.querySelectorAll('#repList .refRow')].map(r => ({
+      nome: r.querySelector('.repNome').value,
+      tel: r.querySelector('.repTel').value,
+      cargo: r.querySelector('.repCargo').value
+    })).filter(r => r.nome || r.tel || r.cargo),
+    referencias: refs,
+    fiscal: {
+      issRet: val('issRet'), inss: val('inss'), irrf: val('irrf'), icmsGeral: val('icmsGeral'),
+      paraConsumo: val('paraConsumo'), declaracaoConsumo: val('declaracaoConsumo'),
+      beneficioFiscal: val('beneficioFiscal'), isencaoST: val('isencaoST'), suframa: val('suframa'),
+      icms2: val('icms2'), pis: val('pis'), cofins: val('cofins'), ipi: val('ipi')
+    },
+    venda: {
+      condPagto: val('condPagto'), repComercial: val('repComercial'),
+      tipoCliente: val('tipoCliente'), valor1Pedido: val('valor1Pedido')
+    },
+    transportadora: {
+      razao: val('transpRazao'), tel: val('transpTel'), email: val('transpEmail'),
+      cnpj: val('transpCnpj'), tipoFrete: val('tipoFrete')
+    },
+    geralExtra: {
+      grupoEconomico: radio('grupoEconomico'), participacoes: radio('participacoes')
+    },
+    emails: { comercial: val('emailComercial'), operador: val('emailOperador') }
+  };
+}
+
+/* ============ GERAÇÃO DE PDF (posição idêntica ao modelo oficial da planilha) ============ */
+function gerarPDF(d){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+  const MARGIN = 40, PAGE_H = 842, COLS = 11; // 11 colunas = mesma contagem B..L da planilha original
+  const CONTENT_W = 595.28 - MARGIN * 2;
+  const colW = CONTENT_W / COLS;
+  const GAP = 5;
+  let y = 70;
+
+  const PETROL = [0,90,105], PETROL_DARK = [0,67,78], ORANGE = [255,103,31];
+  const PETROL_TINT = [224,238,240], LINE_TINT = [178,205,208];
+
+  function ensureSpace(h){
+    if (y + h > PAGE_H - 40){ doc.addPage(); y = 46; }
+  }
+
+  function sectionHeader(num, title){
+    ensureSpace(22);
+    doc.setFillColor(...PETROL);
+    doc.rect(MARGIN, y, CONTENT_W, 18, 'F');
+    doc.setDrawColor(...ORANGE); doc.setLineWidth(1.4);
+    doc.line(MARGIN, y + 18, MARGIN + CONTENT_W, y + 18);
+    doc.setLineWidth(0.75);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(255,255,255);
+    doc.text(`${num}. ${title}`.toUpperCase(), MARGIN + 6, y + 12.5);
+    y += 18 + 8;
+  }
+
+  function fieldBox(x, ytop, w, h, label, value){
+    // faixa do rótulo — só preenchimento leve, sem borda fechada
+    doc.setFillColor(...PETROL_TINT);
+    doc.rect(x, ytop, w - GAP, 10, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(5.6);
+    doc.setTextColor(...PETROL_DARK);
+    doc.text(String(label).toUpperCase(), x + 3, ytop + 7.2, { maxWidth: w - GAP - 6 });
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    doc.setTextColor(35,31,32);
+    doc.text(String(value ?? '') || '—', x + 3, ytop + h - 6, { maxWidth: w - GAP - 6 });
+
+    // só uma linha fina embaixo do valor, como divisória sutil de planilha
+    doc.setDrawColor(...LINE_TINT); doc.setLineWidth(0.5);
+    doc.line(x, ytop + h, x + w - GAP, ytop + h);
+  }
+
+  // fields: [{label,value,span}] ou [{gap:true,span}] — soma dos spans deve fechar em 11
+  function row(fields, h = 30){
+    ensureSpace(h + GAP);
+    let x = MARGIN;
+    fields.forEach(f => {
+      const w = colW * f.span;
+      if (!f.gap) fieldBox(x, y, w - GAP, h, f.label, f.value);
+      x += w;
+    });
+    y += h + GAP;
+  }
+
+  function fullWidthRow(label, value, h = 30){
+    row([{label, value, span: COLS}], h);
+  }
+
+  // ---- Cabeçalho do documento (réplica do topo da planilha) ----
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(20,20,20);
+  doc.text('GART', MARGIN, 34);
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(0,67,78);
+  doc.text('Cadastro de Cliente', MARGIN + 55, 32);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(120,120,120);
+  doc.text('Pessoa Jurídica', MARGIN + 55, 46);
+  // caixa "Tipo de cadastro" no canto superior direito, igual à planilha
+  fieldBox(MARGIN + CONTENT_W - colW*3, 14, colW*3, 30, 'Tipo de cadastro', d.venda.tipoCliente || 'Cliente');
+  doc.setDrawColor(200,200,200); doc.line(MARGIN, 54, MARGIN + CONTENT_W, 54);
+
+  // ---- 01. Informações gerais ----
+  sectionHeader('01', 'Informações gerais');
+  row([{label:'Razão Social', value:d.geral.razaoSocial, span:7},{label:'Nome comercial', value:d.geral.nomeComercial, span:4}]);
+  row([{label:'CNPJ', value:d.geral.cnpj, span:4},{gap:true,span:1},{label:'Insc. Estadual', value:d.geral.ie, span:2},{gap:true,span:2},{label:'Insc. Municipal', value:d.geral.im, span:2}]);
+  row([{label:'Endereço', value:d.geral.endereco, span:6},{label:'Nº', value:d.geral.numero, span:1},{label:'Complemento', value:d.geral.complemento, span:4}]);
+  row([{label:'CEP', value:d.geral.cep, span:2},{label:'Bairro', value:d.geral.bairro, span:3},{gap:true,span:1},{label:'Cidade', value:d.geral.cidade, span:4},{label:'UF', value:d.geral.uf, span:1}]);
+  row([{label:'Contato Comercial', value:d.geral.ccNome, span:5},{label:'Telefone', value:d.geral.ccTel, span:2},{label:'E-mail Comercial', value:d.geral.ccEmail, span:4}]);
+  row([{label:'Contato Financeiro', value:d.geral.cfNome, span:5},{label:'Telefone', value:d.geral.cfTel, span:2},{label:'E-mail de Cobrança', value:d.geral.cfEmail, span:4}]);
+  row([{label:'Porte da empresa', value:d.geral.porte, span:3},{gap:true,span:2},{label:'Capital social', value:d.geral.capitalSocial, span:2},{gap:true,span:2},{label:'Optante pelo Simples', value:d.geral.simples, span:2}]);
+  const representantes = (d.representantes && d.representantes.length) ? d.representantes : [{nome:'', tel:'', cargo:''}];
+  representantes.forEach(r => {
+    row([{label:'Representantes legais', value:r.nome, span:5},{label:'Telefone', value:r.tel, span:2},{label:'Cargo', value:r.cargo, span:4}]);
+  });
+
+  // ---- 02. Referências comerciais ----
+  sectionHeader('02', 'Referências comerciais');
+  if (d.referencias.length === 0){
+    row([{label:'Empresa', value:'—', span:6},{label:'Segmento', value:'—', span:3},{label:'Tipo', value:'—', span:2}]);
+  } else {
+    d.referencias.forEach(r => {
+      row([{label:'Empresa', value:r.empresa, span:6},{label:'Segmento', value:r.segmento, span:3},{label:'Tipo', value:r.tipo, span:2}]);
+    });
+  }
+
+  // ---- 03. Informações fiscais ----
+  sectionHeader('03', 'Informações fiscais');
+  row([
+    {label:'Retenção de ISS', value:d.fiscal.issRet, span:1},{gap:true,span:1},
+    {label:'INSS', value:d.fiscal.inss, span:1},{label:'IRRF', value:d.fiscal.irrf, span:1},{label:'ICMS', value:d.fiscal.icmsGeral, span:1},
+    {gap:true,span:2},
+    {label:'Para Consumo', value:d.fiscal.paraConsumo, span:2},{label:'Se sim, envie declaração', value:d.fiscal.declaracaoConsumo, span:2}
+  ]);
+  row([
+    {gap:true,span:2},{label:'Benefício Fiscal', value:d.fiscal.beneficioFiscal, span:4},
+    {gap:true,span:3},{label:'Isenção de ST', value:d.fiscal.isencaoST, span:2}
+  ]);
+  row([
+    {label:'Suframa?', value:d.fiscal.suframa, span:1},{gap:true,span:1},
+    {label:'ICMS', value:d.fiscal.icms2, span:1},{label:'PIS', value:d.fiscal.pis, span:1},
+    {label:'COFINS', value:d.fiscal.cofins, span:1},{label:'IPI', value:d.fiscal.ipi, span:1},
+    {gap:true,span:5}
+  ]);
+
+  // ---- 05. Informações de venda ----
+  sectionHeader('05', 'Informações de venda');
+  row([
+    {label:'Condição de Pagamento', value:d.venda.condPagto, span:4},
+    {label:'Representante Comercial', value:d.venda.repComercial, span:2},
+    {label:'Tipo de Cliente', value:d.venda.tipoCliente, span:2},
+    {label:'Valor do 1º Pedido', value:d.venda.valor1Pedido, span:3}
+  ]);
+
+  // ---- 06. Dados da transportadora ----
+  sectionHeader('06', 'Dados da Transportadora');
+  row([{label:'Razão Social', value:d.transportadora.razao, span:5},{label:'Telefone', value:d.transportadora.tel, span:2},{label:'E-mail', value:d.transportadora.email, span:4}]);
+  row([{label:'CNPJ', value:d.transportadora.cnpj, span:5},{label:'Tipo de Frete', value:d.transportadora.tipoFrete, span:2},{gap:true,span:4}]);
+
+  // ---- 07. Documentação a Anexar ----
+  sectionHeader('07', 'Documentação a Anexar');
+  const docsAnexados = {
+    doc_cnpj: 'Documento de Inscrição CNPJ (Cartão CNPJ)',
+    doc_sintegra: 'Documento de Inscrição Estadual (Sintegra)',
+    doc_prefeitura: 'Documento de Inscrição Prefeitura',
+    doc_simples: 'Documento de Inscrição Simples Nacional',
+    doc_declaracao: 'Em caso de consumo, declaração via e-mail',
+    doc_ficha: 'Em caso de benefício fiscal, Ficha Legal ST'
+  };
+  Object.entries(docsAnexados).forEach(([id, label]) => {
+    const input = document.getElementById(id);
+    const anexado = input && input.files[0] ? `Anexado: ${input.files[0].name}` : 'Não anexado';
+    fullWidthRow(label, anexado, 22);
+  });
+
+  // ---- 08. Informações Gerais ----
+  sectionHeader('08', 'Informações Gerais');
+  fullWidthRow('A empresa pertence a um grupo econômico?', d.geralExtra.grupoEconomico, 22);
+  fullWidthRow('A empresa possui participações em outras empresas?', d.geralExtra.participacoes, 22);
+
+  return doc;
+}
+
+document.getElementById('btnPreview').addEventListener('click', () => {
+  const doc = gerarPDF(collectData());
+  window.open(doc.output('bloburl'), '_blank');
+});
+
+/* ============ PACOTE DE TESTE (.zip local, sem depender da Cloud Function) ============ */
+document.getElementById('btnPacoteTeste').addEventListener('click', async () => {
+  const finalStatus = document.getElementById('finalStatus');
+  const data = collectData();
+  const fileFields = [
+    { id:'doc_cnpj', label:'Cartão CNPJ' },
+    { id:'doc_sintegra', label:'Sintegra' },
+    { id:'doc_prefeitura', label:'Inscrição Prefeitura' },
+    { id:'doc_simples', label:'Simples Nacional' },
+    { id:'doc_declaracao', label:'Declaração de consumo' },
+    { id:'doc_ficha', label:'Ficha Legal ST' }
+  ];
+
+  try{
+    finalStatus.textContent = 'Montando pacote de teste...';
+    finalStatus.className = '';
+
+    const zip = new JSZip();
+    const doc = gerarPDF(data);
+    zip.file(`cadastro-${(data.geral.cnpj || 'sem-cnpj').replace(/\D/g,'')}.pdf`, doc.output('blob'));
+
+    let anexados = 0;
+    fileFields.forEach(f => {
+      const input = document.getElementById(f.id);
+      if (input.files[0]){
+        zip.file(`${f.label} - ${input.files[0].name}`, input.files[0]);
+        anexados++;
+      }
+    });
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pacote-teste-cadastro-${(data.geral.cnpj || 'sem-cnpj').replace(/\D/g,'')}.zip`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+
+    finalStatus.textContent = `✓ Pacote de teste baixado: PDF + ${anexados} documento(s) anexado(s). Confira o conteúdo do .zip antes de configurar o envio por e-mail.`;
+    finalStatus.className = 'ok';
+  }catch(err){
+    finalStatus.textContent = 'Erro ao montar o pacote de teste: ' + err.message;
+    finalStatus.className = 'err';
+  }
+});
+
+/* ============ ENVIO (PDF + anexos -> Cloud Function) ============ */
+document.getElementById('btnSalvarEnviar').addEventListener('click', async () => {
+  const finalStatus = document.getElementById('finalStatus');
+  const data = collectData();
+
+  if (!data.geral.razaoSocial || !data.geral.cnpj){
+    finalStatus.textContent = 'Preencha ao menos Razão Social e CNPJ antes de enviar.';
+    finalStatus.className = 'err';
+    return;
+  }
+  if (!data.emails.operador){
+    finalStatus.textContent = 'Informe seu e-mail (operador) para receber a cópia do cadastro.';
+    finalStatus.className = 'err';
+    return;
+  }
+
+  finalStatus.textContent = 'Gerando PDF...';
+  finalStatus.className = '';
+
+  const doc = gerarPDF(data);
+  const pdfBlob = doc.output('blob');
+
+  const modoTeste = document.getElementById('modoTeste').checked;
+  const emailComercialEnvio = modoTeste ? '' : data.emails.comercial;
+
+  const fd = new FormData();
+  fd.append('dados', JSON.stringify(data));
+  fd.append('emailComercial', emailComercialEnvio);
+  fd.append('emailOperador', data.emails.operador);
+  fd.append('pdf', pdfBlob, `cadastro-${data.geral.cnpj.replace(/\D/g,'')}.pdf`);
+
+  const fileFields = ['doc_cnpj','doc_sintegra','doc_prefeitura','doc_simples','doc_declaracao','doc_ficha'];
+  fileFields.forEach(id => {
+    const input = document.getElementById(id);
+    if (input.files[0]) fd.append(id, input.files[0]);
+  });
+
+  try{
+    const destinos = [emailComercialEnvio, data.emails.operador].filter(Boolean).join(' e ');
+    finalStatus.textContent = 'Enviando para ' + destinos + '...';
+    const resp = await fetch(CLOUD_FUNCTION_URL, { method: 'POST', body: fd });
+    if (!resp.ok) throw new Error('Falha no envio (' + resp.status + ')');
+    limparFormulario({ manterOperador: true, silencioso: true });
+    finalStatus.textContent = '✓ Cadastro enviado com sucesso para ' + destinos + '. Formulário limpo para o próximo cadastro.';
+    finalStatus.className = 'ok';
+  }catch(err){
+    finalStatus.textContent = 'Erro ao enviar: ' + err.message + '. Você ainda pode usar "Pré-visualizar PDF" ou "Baixar pacote de teste" e enviar manualmente.';
+    finalStatus.className = 'err';
+  }
+});
+</script>
+</body>
+</html>
