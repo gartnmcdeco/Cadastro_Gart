@@ -152,7 +152,7 @@
 
 <header class="top">
   <h1>GART<span>.</span> Cadastro de Cliente — Pessoa Jurídica</h1>
-  <p>Informe o CNPJ para busca automática de dados. Campos marcados como manuais dependem da conferência do operador.</p>
+  <p>Informe o CNPJ para busca automática de dados. Campos marcados como manuais dependem da conferência do responsável.</p>
   <div class="stepper">
     <span>01 Informações gerais</span><span>02 Referências comerciais</span>
     <span>03 Informações fiscais</span><span>05 Informações de venda</span>
@@ -280,7 +280,7 @@
   <!-- 07. DOCUMENTAÇÃO A ANEXAR -->
   <section class="card">
     <h2><span class="num">07.</span> Documentação a anexar</h2>
-    <p class="hint">Estes documentos precisam ser baixados manualmente pelo operador (os sites oficiais exigem confirmação humana) e depois anexados aqui.</p>
+    <p class="hint">Estes documentos precisam ser baixados manualmente pelo responsável (os sites oficiais exigem confirmação humana) e depois anexados aqui.</p>
     <div class="file-item">
       <div><div class="name">Cartão CNPJ</div><div class="desc"><a href="https://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/" target="_blank" rel="noopener">solucoes.receita.fazenda.gov.br/Servicos/cnpjreva ↗</a></div></div>
       <input type="file" id="doc_cnpj" accept="application/pdf">
@@ -333,12 +333,13 @@
     <h2>Envio do cadastro</h2>
     <p class="hint">O PDF final e os documentos anexados serão enviados para os e-mails abaixo.</p>
     <div class="grid">
-      <div class="f f6"><label>E-mail comercial (fixo)</label><input id="emailComercial" value="comercial@gart.com.br" readonly></div>
-      <div class="f f6"><label>Seu e-mail (operador)</label><input id="emailOperador" type="email" placeholder="seunome@gart.com.br"></div>
+      <div class="f f4"><label>E-mail comercial (fixo)</label><input id="emailComercial" value="comercial@gart.com.br" readonly></div>
+      <div class="f f4"><label>E-mail fiscal (fixo)</label><input id="emailFiscal" value="fiscal@gart.com.br" readonly></div>
+      <div class="f f4"><label>Seu e-mail (responsável)</label><input id="emailOperador" type="email" placeholder="seunome@gart.com.br"></div>
       <div class="f" style="grid-column: span 12;">
         <label style="display:flex; align-items:center; gap:7px; text-transform:none; font-weight:600; color:var(--ink); cursor:pointer;">
           <input type="checkbox" id="modoTeste" style="width:auto;">
-          Modo de teste — enviar somente para o meu e-mail (não envia para comercial@gart.com.br)
+          Modo de teste — enviar somente para o meu e-mail (não envia para comercial@gart.com.br nem fiscal@gart.com.br)
         </label>
       </div>
     </div>
@@ -577,7 +578,7 @@ function collectData(){
     geralExtra: {
       grupoEconomico: radio('grupoEconomico'), participacoes: radio('participacoes')
     },
-    emails: { comercial: val('emailComercial'), operador: val('emailOperador') }
+    emails: { comercial: val('emailComercial'), fiscal: val('emailFiscal'), operador: val('emailOperador') }
   };
 }
 
@@ -798,7 +799,7 @@ document.getElementById('btnSalvarEnviar').addEventListener('click', async () =>
     return;
   }
   if (!data.emails.operador){
-    finalStatus.textContent = 'Informe seu e-mail (operador) para receber a cópia do cadastro.';
+    finalStatus.textContent = 'Informe seu e-mail (responsável) para receber a cópia do cadastro.';
     finalStatus.className = 'err';
     return;
   }
@@ -811,10 +812,12 @@ document.getElementById('btnSalvarEnviar').addEventListener('click', async () =>
 
   const modoTeste = document.getElementById('modoTeste').checked;
   const emailComercialEnvio = modoTeste ? '' : data.emails.comercial;
+  const emailFiscalEnvio = modoTeste ? '' : data.emails.fiscal;
 
   const fd = new FormData();
   fd.append('dados', JSON.stringify(data));
   fd.append('emailComercial', emailComercialEnvio);
+  fd.append('emailFiscal', emailFiscalEnvio);
   fd.append('emailOperador', data.emails.operador);
   fd.append('pdf', pdfBlob, `cadastro-${data.geral.cnpj.replace(/\D/g,'')}.pdf`);
 
@@ -825,7 +828,7 @@ document.getElementById('btnSalvarEnviar').addEventListener('click', async () =>
   });
 
   try{
-    const destinos = [emailComercialEnvio, data.emails.operador].filter(Boolean).join(' e ');
+    const destinos = [emailComercialEnvio, emailFiscalEnvio, data.emails.operador].filter(Boolean).join(', ');
     finalStatus.textContent = 'Enviando para ' + destinos + '...';
     const resp = await fetch(CLOUD_FUNCTION_URL, { method: 'POST', body: fd });
     if (!resp.ok) throw new Error('Falha no envio (' + resp.status + ')');
