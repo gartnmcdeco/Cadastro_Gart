@@ -184,7 +184,7 @@
       <div class="f f8" id="wrap_nomeComercial"><label>Nome comercial (fantasia)</label><input id="nomeComercial"><span class="badge-auto">✓ preenchido automaticamente</span></div>
       <div class="f f4" id="wrap_capitalSocial"><label>Capital social</label><input id="capitalSocial" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
 
-      <div class="f f4"><label>Insc. Estadual</label><input id="ie"></div>
+      <div class="f f4"><label>Insc. Estadual <span class="req-mark" id="req_ie" style="display:none;color:#c1432a;">*</span></label><input id="ie"></div>
       <div class="f f4"><label>Insc. Municipal</label><input id="im"></div>
       <div class="f f4" id="wrap_simples"><label>Optante pelo Simples Nacional</label>
         <select id="simples"><option value="">—</option><option>Sim</option><option>Não</option></select>
@@ -199,13 +199,13 @@
       <div class="f f4" id="wrap_cidade"><label>Cidade</label><input id="cidade" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
       <div class="f f2" id="wrap_uf"><label>UF</label><input id="uf" readonly><span class="badge-auto">✓ preenchido automaticamente</span></div>
 
-      <div class="f f4"><label>Contato Comercial <span class="opt">(nome)</span></label><input id="ccNome"></div>
-      <div class="f f4"><label>Telefone</label><input id="ccTel"></div>
-      <div class="f f4"><label>E-mail Comercial</label><input id="ccEmail" type="email"></div>
+      <div class="f f4"><label>Contato Comercial <span class="opt">(nome)</span> <span style="color:#c1432a;">*</span></label><input id="ccNome"></div>
+      <div class="f f4"><label>Telefone <span style="color:#c1432a;">*</span></label><input id="ccTel"></div>
+      <div class="f f4"><label>E-mail Comercial <span style="color:#c1432a;">*</span></label><input id="ccEmail" type="email"></div>
 
-      <div class="f f4"><label>Contato Financeiro <span class="opt">(nome)</span></label><input id="cfNome"></div>
-      <div class="f f4"><label>Telefone</label><input id="cfTel"></div>
-      <div class="f f4"><label>E-mail de Cobrança (nota fiscal)</label><input id="cfEmail" type="email"></div>
+      <div class="f f4"><label>Contato Financeiro <span class="opt">(nome)</span> <span style="color:#c1432a;">*</span></label><input id="cfNome"></div>
+      <div class="f f4"><label>Telefone <span style="color:#c1432a;">*</span></label><input id="cfTel"></div>
+      <div class="f f4"><label>E-mail de Cobrança (nota fiscal) <span style="color:#c1432a;">*</span></label><input id="cfEmail" type="email"></div>
     </div>
 
     <div style="margin-top:16px;">
@@ -246,12 +246,12 @@
 
   <!-- 05. INFORMAÇÕES DE VENDA -->
   <section class="card">
-    <h2><span class="num">05.</span> Informações de venda</h2>
+    <h2><span class="num">05.</span> Informações de venda <span style="color:#c1432a; font-size:.7rem; font-weight:600; text-transform:none;">(todos os campos obrigatórios)</span></h2>
     <div class="grid">
-      <div class="f f3"><label>Condição de Pagamento</label><input id="condPagto"></div>
-      <div class="f f3"><label>Representante Comercial</label><input id="repComercial"></div>
+      <div class="f f3"><label>Condição de Pagamento <span style="color:#c1432a;">*</span></label><input id="condPagto"></div>
+      <div class="f f3"><label>Representante Comercial <span style="color:#c1432a;">*</span></label><input id="repComercial"></div>
       <div class="f f3">
-        <label>Tipo de Cliente</label>
+        <label>Tipo de Cliente <span style="color:#c1432a;">*</span></label>
         <select id="tipoCliente">
           <option value="">—</option>
           <option>Home Center</option><option>Revenda</option><option>Distribuidor</option>
@@ -259,19 +259,20 @@
           <option>Estrangeiro</option>
         </select>
       </div>
-      <div class="f f3"><label>Valor do 1º Pedido</label><input id="valor1Pedido" placeholder="R$"></div>
+      <div class="f f3"><label>Valor do 1º Pedido <span style="color:#c1432a;">*</span></label><input id="valor1Pedido" placeholder="R$"></div>
     </div>
   </section>
 
   <!-- 06. DADOS DA TRANSPORTADORA -->
   <section class="card">
     <h2><span class="num">06.</span> Dados da Transportadora</h2>
+    <p class="hint">Se o frete for <strong>FOB</strong>, o preenchimento dos dados da transportadora abaixo é obrigatório. Se for <strong>CIF</strong>, basta selecionar essa opção — não precisa preencher a transportadora, pois a cotação e escolha ficam por conta da GART.</p>
     <div class="grid">
       <div class="f f6"><label>Razão Social</label><input id="transpRazao"></div>
       <div class="f f3"><label>Telefone</label><input id="transpTel"></div>
       <div class="f f3"><label>E-mail</label><input id="transpEmail" type="email"></div>
       <div class="f f6"><label>CNPJ</label><input id="transpCnpj"></div>
-      <div class="f f6"><label>Tipo de Frete</label>
+      <div class="f f6"><label>Tipo de Frete <span style="color:#c1432a;">*</span></label>
         <select id="tipoFrete"><option value="">—</option><option>FOB</option><option>CIF</option></select>
       </div>
     </div>
@@ -282,11 +283,11 @@
     <h2><span class="num">07.</span> Documentação a anexar</h2>
     <p class="hint">Estes documentos precisam ser baixados manualmente pelo responsável (os sites oficiais exigem confirmação humana) e depois anexados aqui.</p>
     <div class="file-item">
-      <div><div class="name">Cartão CNPJ</div><div class="desc"><a href="https://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/" target="_blank" rel="noopener">solucoes.receita.fazenda.gov.br/Servicos/cnpjreva ↗</a></div></div>
+      <div><div class="name">Cartão CNPJ <span style="color:#c1432a;">*</span></div><div class="desc"><a href="https://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/" target="_blank" rel="noopener">solucoes.receita.fazenda.gov.br/Servicos/cnpjreva ↗</a></div></div>
       <input type="file" id="doc_cnpj" accept="application/pdf">
     </div>
     <div class="file-item">
-      <div><div class="name">Inscrição Estadual (Sintegra)</div><div class="desc"><a href="http://www.sintegra.gov.br/" target="_blank" rel="noopener">www.sintegra.gov.br ↗</a></div></div>
+      <div><div class="name">Inscrição Estadual (Sintegra) <span class="req-mark" id="req_doc_sintegra" style="display:none;color:#c1432a;">*</span></div><div class="desc"><a href="http://www.sintegra.gov.br/" target="_blank" rel="noopener">www.sintegra.gov.br ↗</a></div></div>
       <input type="file" id="doc_sintegra" accept="application/pdf">
     </div>
     <div class="file-item">
@@ -294,7 +295,7 @@
       <input type="file" id="doc_prefeitura" accept="application/pdf">
     </div>
     <div class="file-item">
-      <div><div class="name">Optante Simples Nacional</div><div class="desc"><a href="https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21" target="_blank" rel="noopener">receita.fazenda.gov.br/simplesnacional ↗</a></div></div>
+      <div><div class="name">Optante Simples Nacional <span style="color:#c1432a;">*</span></div><div class="desc"><a href="https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21" target="_blank" rel="noopener">receita.fazenda.gov.br/simplesnacional ↗</a></div></div>
       <input type="file" id="doc_simples" accept="application/pdf">
     </div>
     <div class="file-item">
@@ -335,7 +336,11 @@
     <div class="grid">
       <div class="f f4"><label>E-mail comercial (fixo)</label><input id="emailComercial" value="comercial@gart.com.br" readonly></div>
       <div class="f f4"><label>E-mail fiscal (fixo)</label><input id="emailFiscal" value="fiscal@gart.com.br" readonly></div>
-      <div class="f f4"><label>Seu e-mail (responsável)</label><input id="emailOperador" type="email" placeholder="seunome@gart.com.br"></div>
+      <div class="f f4">
+        <label>Seu e-mail (responsável)</label>
+        <input id="emailOperador" type="text" placeholder="seunome@gart.com.br; gerente@gart.com.br">
+        <span class="opt" style="font-size:.72rem; color:var(--slate); display:block; margin-top:3px;">Pode informar mais de um e-mail (você, gerente, financeiro etc.) — separe cada um com ponto e vírgula ( ; ).</span>
+      </div>
       <div class="f" style="grid-column: span 12;">
         <label style="display:flex; align-items:center; gap:7px; text-transform:none; font-weight:600; color:var(--ink); cursor:pointer;">
           <input type="checkbox" id="modoTeste" style="width:auto;">
@@ -499,6 +504,51 @@ function addRef(){
 document.getElementById('btnAddRef').addEventListener('click', addRef);
 addRef(); // primeira linha já visível
 
+/* ============ CAMPOS OBRIGATÓRIOS CONDICIONAIS (Revenda) ============ */
+const marcasRevenda = ['req_ie','req_doc_sintegra'];
+function atualizarObrigatoriosRevenda(){
+  const ehRevenda = document.getElementById('tipoCliente').value === 'Revenda';
+  marcasRevenda.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = ehRevenda ? 'inline' : 'none';
+  });
+}
+document.getElementById('tipoCliente').addEventListener('change', atualizarObrigatoriosRevenda);
+atualizarObrigatoriosRevenda(); // aplica o estado inicial
+
+/* ============ VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS ANTES DO ENVIO ============ */
+function validarCamposObrigatorios(data){
+  const faltando = [];
+  const ehRevenda = data.venda.tipoCliente === 'Revenda';
+
+  // Seção 05 — sempre obrigatória
+  if (!data.venda.condPagto) faltando.push('Condição de Pagamento (seção 05)');
+  if (!data.venda.repComercial) faltando.push('Representante Comercial (seção 05)');
+  if (!data.venda.tipoCliente) faltando.push('Tipo de Cliente (seção 05)');
+  if (!data.venda.valor1Pedido) faltando.push('Valor do 1º Pedido (seção 05)');
+
+  // Seção 06 — Tipo de Frete sempre obrigatório
+  if (!data.transportadora.tipoFrete) faltando.push('Tipo de Frete (seção 06)');
+
+  // Seção 01 — Contatos Comercial e Financeiro: sempre obrigatórios, para qualquer tipo de cliente
+  if (!data.geral.ccNome) faltando.push('Contato Comercial - nome (seção 01)');
+  if (!data.geral.ccTel) faltando.push('Contato Comercial - telefone (seção 01)');
+  if (!data.geral.ccEmail) faltando.push('E-mail Comercial (seção 01)');
+  if (!data.geral.cfNome) faltando.push('Contato Financeiro - nome (seção 01)');
+  if (!data.geral.cfTel) faltando.push('Contato Financeiro - telefone (seção 01)');
+  if (!data.geral.cfEmail) faltando.push('E-mail de Cobrança / NF (seção 01)');
+
+  // Seção 01 — Insc. Estadual: obrigatória apenas quando Tipo de Cliente = Revenda
+  if (ehRevenda && !data.geral.ie) faltando.push('Insc. Estadual (seção 01 — obrigatório para Revenda)');
+
+  // Seção 07 — documentos: Cartão CNPJ e Optante Simples sempre; Sintegra só se Revenda
+  if (!document.getElementById('doc_cnpj').files[0]) faltando.push('Anexo: Cartão CNPJ (seção 07)');
+  if (!document.getElementById('doc_simples').files[0]) faltando.push('Anexo: Optante Simples Nacional (seção 07)');
+  if (ehRevenda && !document.getElementById('doc_sintegra').files[0]) faltando.push('Anexo: Inscrição Estadual / Sintegra (seção 07 — obrigatório para Revenda)');
+
+  return faltando;
+}
+
 /* ============ LIMPAR FORMULÁRIO ============ */
 function limparFormulario({ manterOperador = true, silencioso = false } = {}){
   const operadorAtual = document.getElementById('emailOperador').value;
@@ -521,6 +571,10 @@ function limparFormulario({ manterOperador = true, silencioso = false } = {}){
   // limpa mensagens de status
   document.getElementById('cnpjStatus').textContent = '';
   document.getElementById('cnpjStatus').className = '';
+
+  // reavalia os asteriscos de obrigatório (Tipo de Cliente volta a ficar vazio)
+  atualizarObrigatoriosRevenda();
+
   if (!silencioso){
     const finalStatus = document.getElementById('finalStatus');
     finalStatus.textContent = 'Formulário limpo — pronto para um novo cadastro.';
@@ -800,6 +854,17 @@ document.getElementById('btnSalvarEnviar').addEventListener('click', async () =>
   }
   if (!data.emails.operador){
     finalStatus.textContent = 'Informe seu e-mail (responsável) para receber a cópia do cadastro.';
+    finalStatus.className = 'err';
+    return;
+  }
+
+  const camposFaltando = validarCamposObrigatorios(data);
+  if (camposFaltando.length > 0){
+    alert(
+      'Não é possível enviar — faltam campos obrigatórios:\n\n' +
+      camposFaltando.map(c => '• ' + c).join('\n')
+    );
+    finalStatus.textContent = 'Envio bloqueado: ' + camposFaltando.length + ' campo(s) obrigatório(s) pendente(s). Confira os campos marcados com *.';
     finalStatus.className = 'err';
     return;
   }
