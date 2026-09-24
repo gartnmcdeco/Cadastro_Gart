@@ -406,9 +406,26 @@ async function buscarDadosCNPJ(raw){
         };
       }
     }
-  }catch(e){ /* nenhuma das duas fontes respondeu */ }
+  }catch(e){ /* segue para a terceira fonte */ }
 
-  throw new Error('nenhuma das duas bases públicas respondeu');
+  // 3ª tentativa: OpenCNPJ (outra fonte pública gratuita, sem autenticação, limite bem mais folgado)
+  try{
+    const r3 = await fetch(`https://api.opencnpj.org/${raw}`);
+    if (r3.ok){
+      const d3 = await r3.json();
+      const capitalNum = parseFloat(String(d3.capital_social || '').replace(/\./g,'').replace(',', '.'));
+      return {
+        razao_social: d3.razao_social, nome_fantasia: d3.nome_fantasia,
+        porte: d3.porte_empresa, capital_social: isNaN(capitalNum) ? undefined : capitalNum,
+        descricao_tipo_de_logradouro: '', logradouro: d3.logradouro,
+        numero: d3.numero, complemento: d3.complemento,
+        cep: (d3.cep || '').replace(/\D/g,''), bairro: d3.bairro,
+        municipio: d3.municipio, uf: d3.uf
+      };
+    }
+  }catch(e){ /* nenhuma das três fontes respondeu */ }
+
+  throw new Error('nenhuma das três bases públicas respondeu');
 }
 
 document.getElementById('btnBuscar').addEventListener('click', async () => {
@@ -419,7 +436,7 @@ document.getElementById('btnBuscar').addEventListener('click', async () => {
     status.className = 'err';
     return;
   }
-  status.textContent = 'Buscando dados (BrasilAPI, com ReceitaWS como alternativa)...';
+  status.textContent = 'Buscando dados (BrasilAPI, com ReceitaWS e OpenCNPJ como alternativas)...';
   status.className = 'busy';
   try{
     const d = await buscarDadosCNPJ(raw);
@@ -456,7 +473,7 @@ document.getElementById('btnBuscar').addEventListener('click', async () => {
     status.textContent = '✓ Dados encontrados e preenchidos. Confira antes de enviar — Insc. Estadual, Insc. Municipal e dados de contato continuam manuais.';
     status.className = 'ok';
   }catch(err){
-    status.textContent = 'Não foi possível buscar automaticamente em nenhuma das duas bases (BrasilAPI / ReceitaWS). Se você abriu este arquivo localmente, teste na versão publicada no GitHub Pages — algumas chamadas externas são bloqueadas em arquivos abertos direto do computador. Se persistir, preencha manualmente.';
+    status.textContent = 'Não foi possível buscar automaticamente em nenhuma das três bases (BrasilAPI / ReceitaWS / OpenCNPJ). Se você abriu este arquivo localmente, teste na versão publicada no GitHub Pages — algumas chamadas externas são bloqueadas em arquivos abertos direto do computador. Se persistir, pode ser bloqueio temporário por excesso de uso (erro 429) — espere alguns minutos e tente de novo, ou preencha manualmente.';
     status.className = 'err';
   }
 });
