@@ -260,6 +260,7 @@
         </select>
       </div>
       <div class="f f3"><label>Valor do 1º Pedido <span style="color:#c1432a;">*</span></label><input id="valor1Pedido" placeholder="R$"></div>
+      <div class="f" id="wrap_construtora" style="display:none;"><label>Nome da Construtora Responsável pela Obra <span style="color:#c1432a;">*</span></label><input id="construtoraNome" placeholder="Digite o nome da construtora, mesmo que o faturamento seja em nome dela (ex.: SPE / obra)"></div>
     </div>
   </section>
 
@@ -533,6 +534,15 @@ function atualizarObrigatoriosRevenda(){
 document.getElementById('tipoCliente').addEventListener('change', atualizarObrigatoriosRevenda);
 atualizarObrigatoriosRevenda(); // aplica o estado inicial
 
+/* Campo "Construtora responsável" — aparece e é obrigatório só quando Tipo de Cliente = Construtora */
+function atualizarCampoConstrutora(){
+  const ehConstrutora = document.getElementById('tipoCliente').value === 'Construtora';
+  document.getElementById('wrap_construtora').style.display = ehConstrutora ? 'flex' : 'none';
+  if (!ehConstrutora) document.getElementById('construtoraNome').value = '';
+}
+document.getElementById('tipoCliente').addEventListener('change', atualizarCampoConstrutora);
+atualizarCampoConstrutora();
+
 /* ============ VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS ANTES DO ENVIO ============ */
 function validarCamposObrigatorios(data){
   const faltando = [];
@@ -543,6 +553,8 @@ function validarCamposObrigatorios(data){
   if (!data.venda.repComercial) faltando.push('Representante Comercial (seção 05)');
   if (!data.venda.tipoCliente) faltando.push('Tipo de Cliente (seção 05)');
   if (!data.venda.valor1Pedido) faltando.push('Valor do 1º Pedido (seção 05)');
+  if (data.venda.tipoCliente === 'Construtora' && !(data.venda.construtoraNome || '').trim())
+    faltando.push('Nome da Construtora Responsável pela Obra (seção 05 — obrigatório para Construtora)');
 
   // Seção 06 — Tipo de Frete sempre obrigatório
   if (!data.transportadora.tipoFrete) faltando.push('Tipo de Frete (seção 06)');
@@ -591,6 +603,7 @@ function limparFormulario({ manterOperador = true, silencioso = false } = {}){
 
   // reavalia os asteriscos de obrigatório (Tipo de Cliente volta a ficar vazio)
   atualizarObrigatoriosRevenda();
+  atualizarCampoConstrutora();
 
   if (!silencioso){
     const finalStatus = document.getElementById('finalStatus');
@@ -640,7 +653,8 @@ function collectData(){
     },
     venda: {
       condPagto: val('condPagto'), repComercial: val('repComercial'),
-      tipoCliente: val('tipoCliente'), valor1Pedido: val('valor1Pedido')
+      tipoCliente: val('tipoCliente'), valor1Pedido: val('valor1Pedido'),
+      construtoraNome: val('construtoraNome')
     },
     transportadora: {
       razao: val('transpRazao'), tel: val('transpTel'), email: val('transpEmail'),
@@ -778,6 +792,9 @@ function gerarPDF(d){
     {label:'Tipo de Cliente', value:d.venda.tipoCliente, span:2},
     {label:'Valor do 1º Pedido', value:d.venda.valor1Pedido, span:3}
   ]);
+  if (d.venda.tipoCliente === 'Construtora') {
+    row([{label:'Construtora responsável pela obra', value:d.venda.construtoraNome, span:11}]);
+  }
 
   // ---- 06. Dados da transportadora ----
   sectionHeader('06', 'Dados da Transportadora');
